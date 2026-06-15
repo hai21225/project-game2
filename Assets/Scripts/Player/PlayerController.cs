@@ -1,31 +1,20 @@
 using Cinemachine;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerController: NetworkBehaviour
 {
-
-    [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private GameObject _flashLight;
-
     private NetworkVariable<bool> _isOff = new NetworkVariable<bool>(false);
-
-    private Rigidbody2D _rb;
-
     private Camera _cam;
 
-    //private bool _wasMoving=false;
+    public static readonly List<PlayerController> Players = new();
 
     public override void OnNetworkSpawn()
     {
         _isOff.OnValueChanged += OnLightStateChange;
         OnLightStateChange(false, _isOff.Value);
-        Debug.Log(
-    $"Player:{name} " +
-    $"IsOwner:{IsOwner} " +
-    $"IsServer:{IsServer} " +
-    $"OwnerId:{OwnerClientId}"
-);
 
         if (!IsOwner)
         {
@@ -38,20 +27,17 @@ public class PlayerController: NetworkBehaviour
         {
             vcam.Follow = transform;
         }
+        Players.Add(this);
     }
 
     public override void OnNetworkDespawn()
     {
         _isOff.OnValueChanged -= OnLightStateChange;
+        Players.Remove(this);
     }
     private void Awake()
     {
-        _rb= GetComponent<Rigidbody2D>();
         _cam= Camera.main;
-    }
-    private void Start()
-    {
-        Debug.Log(_rb.bodyType);
     }
     private void Update()
     {
@@ -61,26 +47,6 @@ public class PlayerController: NetworkBehaviour
         }
         FlashLightRotation();
         TurnOffLight();
-    }
-
-    private void FixedUpdate()
-    {
-        if(!IsOwner) return;
-        Debug.Log("checlllllll");
-
-        Movement();
-
-    }
-
-    private void Movement()
-    {
-        float vertical = Input.GetAxis("Vertical");
-        float horizontal = Input.GetAxis("Horizontal");
-
-        Debug.Log($"Input: {horizontal}, {vertical}");
-
-        var _moveInput = new Vector2(horizontal, vertical).normalized;
-        _rb.velocity= _moveInput* _moveSpeed;
     }
 
     private void FlashLightRotation()
