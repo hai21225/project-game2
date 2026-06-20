@@ -11,7 +11,7 @@ TagManager:
   - Wall
   - Water
   - UI
-  - 
+  - ObjectInteraction
   - 
   - 
   - 
@@ -47,8 +47,11 @@ TagManager:
   - name: Collider
     uniqueID: 4019527411
     locked: 0
-  - name: other
-    uniqueID: 1866749441
+  - name: ObjectCollider
+    uniqueID: 3339967615
+    locked: 0
+  - name: DecorationUnderPlayer
+    uniqueID: 1738976059
     locked: 0
   - name: Player
     uniqueID: 1717080687
@@ -56,6 +59,9 @@ TagManager:
   - name: Decoration
     uniqueID: 2723251991
     locked: 0
-  - name: Ghost
+  - name: Entity
     uniqueID: 69414583
+    locked: 0
+  - name: other
+    uniqueID: 1866749441
     locked: 0
