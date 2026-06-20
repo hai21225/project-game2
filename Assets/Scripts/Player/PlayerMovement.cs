@@ -28,7 +28,7 @@ public class PlayerMovement : NetworkBehaviour
         float vertical = Input.GetAxis("Vertical");
         float horizontal = Input.GetAxis("Horizontal");
 
-        Debug.Log($"Input: {horizontal}, {vertical}");
+       // Debug.Log($"Input: {horizontal}, {vertical}");
 
         var _moveInput = new Vector2(horizontal, vertical).normalized;
         _rb.velocity = _moveInput * _moveSpeed;

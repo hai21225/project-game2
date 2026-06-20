@@ -1,18 +1,20 @@
 using System.Linq;
 using System.Reflection;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-[RequireComponent(typeof(CompositeCollider2D))]
-public class ShadowCaster2DTileMap : MonoBehaviour
-{
 
-    [Space]
+
+#if UNITY_EDITOR
+
+[RequireComponent(typeof(CompositeCollider2D))]
+public class ShadowCaster2DCreator : MonoBehaviour
+{
     [SerializeField]
     private bool selfShadows = true;
 
     private CompositeCollider2D tilemapCollider;
-
 
     static readonly FieldInfo meshField = typeof(ShadowCaster2D).GetField("m_Mesh", BindingFlags.NonPublic | BindingFlags.Instance);
     static readonly FieldInfo shapePathField = typeof(ShadowCaster2D).GetField("m_ShapePath", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -21,10 +23,10 @@ public class ShadowCaster2DTileMap : MonoBehaviour
                                     .Assembly
                                     .GetType("UnityEngine.Rendering.Universal.ShadowUtility")
                                     .GetMethod("GenerateShadowMesh", BindingFlags.Public | BindingFlags.Static);
-    public void Generate()
-    {
-        DestroyAllChildren();
 
+    public void Create()
+    {
+        DestroyOldShadowCasters();
         tilemapCollider = GetComponent<CompositeCollider2D>();
 
         for (int i = 0; i < tilemapCollider.pathCount; i++)
@@ -45,13 +47,11 @@ public class ShadowCaster2DTileMap : MonoBehaviour
             shapePathField.SetValue(shadowCasterComponent, testPath);
             shapePathHashField.SetValue(shadowCasterComponent, Random.Range(int.MinValue, int.MaxValue));
             meshField.SetValue(shadowCasterComponent, new Mesh());
-            generateShadowMeshMethod.Invoke(shadowCasterComponent, new object[] { meshField.GetValue(shadowCasterComponent), shapePathField.GetValue(shadowCasterComponent) });
+            generateShadowMeshMethod.Invoke(shadowCasterComponent,
+            new object[] { meshField.GetValue(shadowCasterComponent), shapePathField.GetValue(shadowCasterComponent) });
         }
-
-        // Debug.Log("Generate");
-
     }
-    public void DestroyAllChildren()
+    public void DestroyOldShadowCasters()
     {
 
         var tempList = transform.Cast<Transform>().ToList();
@@ -59,7 +59,31 @@ public class ShadowCaster2DTileMap : MonoBehaviour
         {
             DestroyImmediate(child.gameObject);
         }
+    }
+}
 
+[CustomEditor(typeof(ShadowCaster2DCreator))]
+public class ShadowCaster2DTileMapEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        DrawDefaultInspector();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Create"))
+        {
+            var creator = (ShadowCaster2DCreator)target;
+            creator.Create();
+        }
+
+        if (GUILayout.Button("Remove Shadows"))
+        {
+            var creator = (ShadowCaster2DCreator)target;
+            creator.DestroyOldShadowCasters();
+        }
+        EditorGUILayout.EndHorizontal();
     }
 
 }
+
+#endif
