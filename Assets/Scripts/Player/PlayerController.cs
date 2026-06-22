@@ -1,4 +1,4 @@
-using Cinemachine;
+﻿using Cinemachine;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -13,21 +13,39 @@ public class PlayerController: NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        // Đăng ký sự kiện đồng bộ đèn cho TẤT CẢ các máy
         _isOff.OnValueChanged += OnLightStateChange;
-        OnLightStateChange(false, _isOff.Value);
 
-        if (!IsOwner)
+        // Cập nhật trạng thái đèn hiện tại ngay khi spawn (Dùng giá trị thực tế)
+        OnLightStateChange(_isOff.Value, _isOff.Value);
+
+        // SỬA XUNG ĐỘT 1: Tất cả các máy đều phải biết và thêm Player này vào danh sách chung
+        if (Players != null)
         {
-            return;
+            Players.Add(this);
         }
 
+        if (!IsOwner) return;
         var vcam = FindObjectOfType<CinemachineVirtualCamera>();
-
+        if (vcam == null)
+        {
+            Debug.LogError("Không tìm thấy CinemachineVirtualCamera trên Scene!");
+        }
         if (vcam != null)
         {
             vcam.Follow = transform;
         }
-        Players.Add(this);
+
+
+        var inventoryUi = FindAnyObjectByType<InventoryUi>();
+        if (inventoryUi != null)
+        {
+            inventoryUi.Bind(GetComponent<Inventory>());
+        }
+        else
+        {
+            Debug.LogError("Không tìm thấy InventoryUi trên Scene!");
+        }
     }
 
     public override void OnNetworkDespawn()
@@ -47,8 +65,17 @@ public class PlayerController: NetworkBehaviour
         }
         FlashLightRotation();
         TurnOffLight();
+        OpenInventory();
+
     }
 
+    private void OpenInventory()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            UiManager.Instance.ToggleInventory();
+        }
+    }
     private void FlashLightRotation()
     {
         Vector3 mousePos = Input.mousePosition;
