@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4072a1b73edd5a74481dcb8196a13c29, type: 3}
   m_Name: Book
   m_EditorClassIdentifier: 
+  Id: 1
   ItemName: Book
   Icon: {fileID: 2045956214, guid: 2a62f94143752fe498bfde4e5172b748, type: 3}
   Prefab: {fileID: 3718589681286812502, guid: b81023c9e7622644391d8dc584216605, type: 3}
