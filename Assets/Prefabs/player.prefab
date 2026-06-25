@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: -2659296528570307787}
   - component: {fileID: 5567096767876190445}
   - component: {fileID: 2509144326892316693}
+  - component: {fileID: 5389184574112609925}
   m_Layer: 0
   m_Name: player
   m_TagString: Untagged
@@ -173,7 +174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1260498397
+  GlobalObjectIdHash: 884749076
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -342,6 +343,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 485463238faa66a45b90229ec5eb7a1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5389184574112609925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5681028175813492992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 617c2b684961cd0469c7f8c198bd4252, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerInventory: {fileID: 2509144326892316693}
+  _displayName: "T\xFAi \u0111\u1ED3 c\u1EE7a b\u1EA1n"
 --- !u!1 &6091911645274727557
 GameObject:
   m_ObjectHideFlags: 0
