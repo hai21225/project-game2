@@ -37,15 +37,16 @@ public class PlayerController: NetworkBehaviour
         }
 
 
-        var inventoryUi = FindAnyObjectByType<InventoryUi>();
-        if (inventoryUi != null)
-        {
-            inventoryUi.Bind(GetComponent<Inventory>());
-        }
-        else
-        {
-            Debug.LogError("Không tìm thấy InventoryUi trên Scene!");
-        }
+        //var inventoryUi = FindAnyObjectByType<InventoryUi>();
+        //if (inventoryUi != null)
+        //{
+        //    inventoryUi.Bind(GetComponent<Inventory>());
+        //}
+        //else
+        //{
+        //    Debug.LogError("Không tìm thấy InventoryUi trên Scene!");
+        //}
+        //InventoryUi.Instance.Bind(GetComponent<Inventory>());
     }
 
     public override void OnNetworkDespawn()

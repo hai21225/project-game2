@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using System.Linq;
 public class Inventory : NetworkBehaviour
 {
     private NetworkList<int> _items = new();
@@ -24,9 +23,10 @@ public class Inventory : NetworkBehaviour
         _items.OnListChanged -= OnInventoryChanged;
     }
 
-    public void RemoveItem()
+    public void RemoveItem(int itemId)
     {
-
+        if (!IsServer) return;
+        _items.Remove(itemId);
     }
     private void OnInventoryChanged(NetworkListEvent<int> e)
     {
@@ -43,5 +43,38 @@ public class Inventory : NetworkBehaviour
         }
 
         return result;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void TransferItemServerRpc(NetworkObjectReference sourceRef, NetworkObjectReference targetRef, int itemId)
+    {
+        if(!sourceRef.TryGet(out NetworkObject sourceObj))
+        {
+            return;
+        }
+        if (!targetRef.TryGet(out NetworkObject targetObj))
+        {
+            return;
+        }
+        Inventory sourceInventory = sourceObj.GetComponent<Inventory>();
+        Inventory targetInventory = targetObj.GetComponent<Inventory>();
+
+        if (sourceInventory==null || targetInventory == null)
+        {
+            return;
+        }
+
+        sourceInventory.RemoveItem(itemId);
+
+        ItemData itemData= ItemMapping.Instance.GetItem(itemId);
+        targetInventory.AddItem(itemData);
+
+    }
+
+
+    public override void OnDestroy()
+    {
+        _items?.Dispose();
+        base.OnDestroy();
     }
 }
