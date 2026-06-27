@@ -8,8 +8,7 @@ public class BoxInteraction : MonoBehaviour, IInteractable, IItemReceiver
 
     public void Interact()
     {
-        Debug.Log("Interacted with the box. Waiting for the correct item to be received.");
-        InventoryUi.Instance.OpenForReceiver(this);
+        
     }
 
     public void ReceiveItem(int id)

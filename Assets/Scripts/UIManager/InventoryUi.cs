@@ -5,17 +5,10 @@ using UnityEngine;
 public class InventoryUi : MonoBehaviour
 {
     [SerializeField] private InventorySlotUi _slotPrefab;
+    [SerializeField] private Transform _content;
+    [SerializeField] private TMP_Text _title;
 
-    [SerializeField] private Transform _sourceContent;
-    [SerializeField] private Transform _targetContent;
-
-    [SerializeField] private TMP_Text _sourceTitle;
-    [SerializeField] private TMP_Text _targetTitle;
-
-    private IItemReceiver _currentReceiver;
-
-    private Inventory _sourceInventory;
-    private Inventory _targetInventory;
+    private Inventory _inventory;
 
     public static InventoryUi Instance;// sigleton instance
     private void Awake()
@@ -34,48 +27,28 @@ public class InventoryUi : MonoBehaviour
 
     private void Refresh()
     {
-        DrawInventory(_sourceInventory, _sourceContent,true);
 
-        DrawInventory( _targetInventory, _targetContent,false);
+        DrawInventory( _inventory, _content);
 
-        UiManager.Instance.ToggleInventory();
+        //UiManager.Instance.ToggleInventory();
     }
 
-    public void OpenForReceiver(IItemReceiver receiver)
+    public void Open(IInventoryHolder inventory)
     {
-        _currentReceiver = receiver;
+        if (_inventory != null)
+            _inventory.OnInventoryUpdated -= Refresh;
 
-        UiManager.Instance.ToggleInventory();
+        _inventory = inventory.GetInventory();
+
+
+        _title.text = inventory.DisplayName; 
+
+        _inventory.OnInventoryUpdated += Refresh;
 
         Refresh();
     }
 
-
-    public void Open(IInventoryHolder sourceInventory, IInventoryHolder targetInventory)
-    {
-        if (_sourceInventory != null)
-            _sourceInventory.OnInventoryUpdated -= Refresh;
-
-        if (_targetInventory != null)
-            _targetInventory.OnInventoryUpdated -= Refresh;
-
-        _sourceInventory = sourceInventory.GetInventory();
-        _targetInventory = targetInventory.GetInventory();
-
-        _sourceTitle.text = sourceInventory.DisplayName;
-        _targetTitle.text = targetInventory.DisplayName;
-
-        //Debug.Log(_sourceInventory.GetItems().Count + " items in source inventory");
-        //Debug.Log(_targetInventory.GetItems().Count + " items in target inventory");
-
-        _sourceInventory.OnInventoryUpdated += Refresh;
-        _targetInventory.OnInventoryUpdated +=Refresh;
-     
-
-        Refresh();
-    }
-
-    private void DrawInventory(Inventory inventory, Transform content, bool isSource)
+    private void DrawInventory(Inventory inventory, Transform content)
     {
         foreach (Transform child in content)
         {
@@ -101,28 +74,22 @@ public class InventoryUi : MonoBehaviour
             slot.Setup(item);
             slot.OnClick += itemId =>
             {
-                OnItemClicked(itemId, isSource);
+                OnItemClicked(itemId);
             };
         }
     }
 
-    private void OnItemClicked(int itemId,bool isSource)
+    private void OnItemClicked(int itemId)
     {
-        Inventory from = isSource ? _sourceInventory : _targetInventory;
-        Inventory to = isSource ? _targetInventory : _sourceInventory;
-
-        Inventory playerInventory = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<Inventory>();
-
-        playerInventory.TransferItemServerRpc(from.NetworkObject, to.NetworkObject, itemId);
+        Debug.Log($"Clicked on item with ID: {itemId}");
     }
 
     public void Close()
     {
-        if (_sourceInventory != null)
-            _sourceInventory.OnInventoryUpdated -= Refresh;
+        if (_inventory != null)
+            _inventory.OnInventoryUpdated -= Refresh;
 
-        if (_targetInventory != null)
-            _targetInventory.OnInventoryUpdated -= Refresh;
+        _inventory = null;
     }
 }
 
