@@ -74,7 +74,7 @@ public class PlayerController: NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            UiManager.Instance.ToggleInventory();
+            UiManager.Instance.ToggleInventory(GetComponent<IInventoryHolder>());
         }
     }
     private void FlashLightRotation()

@@ -14,7 +14,9 @@ public class ItemContainer : NetworkBehaviour, IInteractable, IInventoryHolder
     {
         //RequestInteractServerRpc();
         var playerLocalInventory = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<IInventoryHolder>();
-        InventoryUi.Instance.Open(this, playerLocalInventory);
+        //InventoryTransferUi.Instance.Open(this, playerLocalInventory);
+
+        UiManager.Instance.ToggleInventoryTransfer(this, playerLocalInventory);
     }
 
     public override void OnNetworkSpawn()
