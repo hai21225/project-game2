@@ -1,9 +1,11 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class Tv : NetworkBehaviour,IInteractable
 {
     [SerializeField] private Animator _animator;
+    [SerializeField] private Light2D _light;
 
     private NetworkVariable<bool> _turnOff = new(
         true,
@@ -26,6 +28,8 @@ public class Tv : NetworkBehaviour,IInteractable
     {
 
         _animator.SetBool("isOff", _turnOff.Value);
+        Debug.Log("ajkhhdjksahjkdah::::"+_turnOff.Value.ToString()) ;
+        _light.enabled = !_turnOff.Value;
     }
 
     private void OnTvStateChanged(bool previous, bool current)
@@ -55,5 +59,13 @@ public class Tv : NetworkBehaviour,IInteractable
     private void ToggleTv()
     {
         _turnOff.Value = !_turnOff.Value;
+        if(_turnOff.Value)
+        {
+            _light.enabled = !_turnOff.Value;
+        }
+        else
+        {
+            _light.enabled = !_turnOff.Value;
+        }
     }
 }

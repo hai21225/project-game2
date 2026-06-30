@@ -21,9 +21,12 @@ public class ItemContainer : NetworkBehaviour, IInteractable, IInventoryHolder
 
     public override void OnNetworkSpawn()
     {
-        if (IsServer)
+        if (IsServer) 
         {
-            _containerInventory.AddItem(_startItem);
+            if (_startItem != null)
+            {
+                _containerInventory.AddItem(_startItem);
+            }
         }
     }
 
