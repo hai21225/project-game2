@@ -8,10 +8,13 @@ public class Inventory : NetworkBehaviour
 
     public event Action OnInventoryUpdated;
 
+    public event Action OnInventoryChange;
+
     public void AddItem(ItemData item)
     {
         if (!IsServer) return;
         _items.Add(item.Id);
+        OnInventoryChange?.Invoke();
     }
 
     public override void  OnNetworkSpawn()
@@ -27,6 +30,7 @@ public class Inventory : NetworkBehaviour
     {
         if (!IsServer) return;
         _items.Remove(itemId);
+        OnInventoryChange?.Invoke();
     }
     private void OnInventoryChanged(NetworkListEvent<int> e)
     {
