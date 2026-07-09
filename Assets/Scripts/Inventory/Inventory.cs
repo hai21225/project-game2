@@ -4,16 +4,16 @@ using Unity.Netcode;
 using UnityEngine;
 public class Inventory : NetworkBehaviour
 {
-    private NetworkList<int> _items = new();
+    private NetworkList<InventoryItem> _items = new();
 
     public event Action OnInventoryUpdated;
 
     public event Action OnInventoryChange;
 
-    public void AddItem(ItemData item)
+    public void AddItem(InventoryItem item)
     {
         if (!IsServer) return;
-        _items.Add(item.Id);
+        _items.Add(item);
         OnInventoryChange?.Invoke();
     }
 
@@ -26,20 +26,33 @@ public class Inventory : NetworkBehaviour
         _items.OnListChanged -= OnInventoryChanged;
     }
 
-    public void RemoveItem(int itemId)
+    public InventoryItem RemoveItem(int itemId)
     {
-        if (!IsServer) return;
-        _items.Remove(itemId);
-        OnInventoryChange?.Invoke();
+        if (!IsServer) return default;
+
+        for (int i = 0; i < _items.Count; i++)
+        {
+            if (_items[i].ItemId == itemId)
+            {
+                InventoryItem item = _items[i];
+                _items.RemoveAt(i);
+
+                OnInventoryChange?.Invoke();
+
+                return item;
+            }
+        }
+
+        return default;
     }
-    private void OnInventoryChanged(NetworkListEvent<int> e)
+    private void OnInventoryChanged(NetworkListEvent<InventoryItem> e)
     {
         Debug.Log("Inventory Changed");
         OnInventoryUpdated?.Invoke();
     }
-    public List<int> GetItems()
+    public List<InventoryItem> GetItems()
     {
-        List<int> result = new();
+        List<InventoryItem> result = new();
 
         foreach (var item in _items)
         {
@@ -68,13 +81,20 @@ public class Inventory : NetworkBehaviour
             return;
         }
 
-        sourceInventory.RemoveItem(itemId);
+        InventoryItem item =sourceInventory.RemoveItem(itemId);
 
-        ItemData itemData= ItemMapping.Instance.GetItem(itemId);
-        targetInventory.AddItem(itemData);
+        //ItemData itemData= ItemMapping.Instance.GetItem(itemId);
+        targetInventory.AddItem(item);
 
     }
 
+
+    public void Clear()
+    {
+        if (!IsServer) return;
+        _items.Clear();
+        OnInventoryChange?.Invoke();
+    }
 
     public override void OnDestroy()
     {

@@ -35,6 +35,7 @@ public class Tv : NetworkBehaviour,IInteractable
     private void OnTvStateChanged(bool previous, bool current)
     {
         _animator.SetBool("isOff", current);
+        _light.enabled = !current;
     }
 
     public void Interact()
@@ -59,13 +60,6 @@ public class Tv : NetworkBehaviour,IInteractable
     private void ToggleTv()
     {
         _turnOff.Value = !_turnOff.Value;
-        if(_turnOff.Value)
-        {
-            _light.enabled = !_turnOff.Value;
-        }
-        else
-        {
-            _light.enabled = !_turnOff.Value;
-        }
+        //_light.enabled = !_turnOff.Value;
     }
 }

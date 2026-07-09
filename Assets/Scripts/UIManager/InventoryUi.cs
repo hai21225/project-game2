@@ -63,7 +63,7 @@ public class InventoryUi : MonoBehaviour
         foreach (var itemId in inventory.GetItems())
         {
             ItemData item =
-                ItemMapping.Instance.GetItem(itemId);
+                ItemMapping.Instance.GetItem(itemId.ItemId);
 
             var slot =
                 Instantiate(_slotPrefab, content);

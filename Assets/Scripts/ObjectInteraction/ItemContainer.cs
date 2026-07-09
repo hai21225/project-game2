@@ -25,7 +25,11 @@ public class ItemContainer : NetworkBehaviour, IInteractable, IInventoryHolder
         {
             if (_startItem != null)
             {
-                _containerInventory.AddItem(_startItem);
+                _containerInventory.AddItem(new InventoryItem
+                {
+                    ItemId = _startItem.Id,
+                    HomeContainer = NetworkObject
+                });
             }
         }
     }

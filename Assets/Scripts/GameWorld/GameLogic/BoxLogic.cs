@@ -37,13 +37,18 @@ public class BoxLogic : NetworkBehaviour
 
     private bool Check()
     {
-        List<int> items = _items.GetInventory().GetItems();
+        List<InventoryItem> items = _items.GetInventory().GetItems();
 
         if (items.Count != _mainItem.Length)
             return false;
 
-        List<int> currentIds = new(items);
+        List<int> currentIds = new();
         List<int> targetIds = new();
+
+        foreach (var item in items)
+        {
+            currentIds.Add(item.ItemId);
+        }
 
         foreach (var item in _mainItem)
         {
