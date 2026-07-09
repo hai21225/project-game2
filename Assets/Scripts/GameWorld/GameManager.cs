@@ -15,7 +15,7 @@ public class GameManager: NetworkBehaviour
             box.OnStateChanged += CheckBoxes;
         }
 
-        CheckBoxes(); // kiểm tra luôn trạng thái ban đầu nếu cần
+        CheckBoxes(); 
     }
 
     public override void OnNetworkDespawn()
@@ -25,7 +25,7 @@ public class GameManager: NetworkBehaviour
 
         foreach (var box in _boxes)
         {
-            box.OnStateChanged += CheckBoxes;
+            box.OnStateChanged -= CheckBoxes;
         }
 
     }

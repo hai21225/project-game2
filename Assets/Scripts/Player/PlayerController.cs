@@ -36,23 +36,25 @@ public class PlayerController: NetworkBehaviour
             vcam.Follow = transform;
         }
 
-
-        //var inventoryUi = FindAnyObjectByType<InventoryUi>();
-        //if (inventoryUi != null)
-        //{
-        //    inventoryUi.Bind(GetComponent<Inventory>());
-        //}
-        //else
-        //{
-        //    Debug.LogError("Không tìm thấy InventoryUi trên Scene!");
-        //}
-        //InventoryUi.Instance.Bind(GetComponent<Inventory>());
     }
 
     public override void OnNetworkDespawn()
     {
+        Debug.Log("Player Despawn");
+
+        Inventory inventory = GetComponent<Inventory>();
+
+        Debug.Log(inventory.GetItems().Count);
+
+        if (IsServer)
+        {
+            ReturnAllItems();
+        }
+
         _isOff.OnValueChanged -= OnLightStateChange;
         Players.Remove(this);
+
+        
     }
     private void Awake()
     {
@@ -117,5 +119,28 @@ public class PlayerController: NetworkBehaviour
     private void OnLightStateChange(bool previousValue, bool newValue)
     {
         _flashLight.SetActive(!newValue);
+    }
+
+    private void ReturnAllItems()
+    {
+        Inventory inventory = GetComponent<Inventory>();
+        var items = inventory.GetItems();
+
+        foreach (var item in items)
+        {
+            if (item.HomeContainer.TryGet(out NetworkObject containerObj))
+            {
+                var containerInventory = containerObj.GetComponent<Inventory>();
+                if (containerInventory != null)
+                {
+                    containerInventory.AddItem(item);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Item with ID {item.ItemId} has no valid origin container.");
+            }
+        }
+        inventory.Clear();
     }
 }

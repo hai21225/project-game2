@@ -11,4 +11,7 @@ public class PlayerInventoryHolder: MonoBehaviour, IInventoryHolder
     {
         return _playerInventory;
     }
+
+
+
 }
